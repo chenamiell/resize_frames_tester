@@ -1,11 +1,13 @@
 import threading
 import time
-from video_to_frames.convert_video_to_frames import VideoToFrames
-import requests
-import settings
-
 from os import listdir
 from os.path import isfile, join
+from pprint import pprint
+
+import requests
+
+import settings
+from video_to_frames.convert_video_to_frames import VideoToFrames
 
 
 class MyThread(threading.Thread):
@@ -24,13 +26,11 @@ class MyThread(threading.Thread):
         dir_files = [f for f in listdir(v2f.new_dir_path) if isfile(join(v2f.new_dir_path, f))]
 
         for file in dir_files:
-            files = {'file': open(file, 'rb')}
-            payload = {'Content - Disposition': 'form - data', 'name': "image", 'filename': file}
-            self.responses.append(requests.post(url=settings.URL, files=files,
-                                                headers={'Content-Type': 'multipart/form-data'}, data=payload))
+            files = {'image': open(file, 'rb')}
+            self.responses.append(requests.post(url=settings.URL, files=files))
         self.end_time = time.time()
 
-        print(
+        pprint(
             {
                 'insatnces_response': [r.json() for r in self.responses],
                 'whole_video_frames_resized': self.end_time - self.start_time

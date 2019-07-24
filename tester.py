@@ -1,21 +1,39 @@
-import sys
 from time import sleep
+import sys
 from thread_util.my_thread import MyThread
 import os
 
 
-def test(N, M, video_path):
+def test(n, m, video_path):
     thread_list = list()
-    for i in range(N):
+    for i in range(n):
         t = MyThread(i, video_path)
         t.start()
         thread_list.append(t)
-        sleep(M)
+        sleep(m)
     [t.join() for t in thread_list]
 
 
 if __name__ == '__main__':
-    N =1 # sys.argv[1]
-    M =10 # sys.argv[2]
-    VIDEO_PATH = r'C:\Users\chen amiel\Desktop\1.mp4' #sys.argv[3]
-    test(N, M, VIDEO_PATH)
+    n = int(sys.argv[1])
+    m = int(sys.argv[2])
+    try:
+        val = n
+        if val == 0:
+            sys.exit("N should be bigger than 0")
+    except ValueError:
+        sys.exit("N should be integer")
+
+    try:
+        val = m
+        if val == 0:
+            sys.exit("M should be bigger than 0")
+    except ValueError:
+        sys.exit("M should be integer")
+
+    video_path = sys.argv[3]
+    try:
+        os.path.isfile(video_path)
+    except:
+        sys.exit("Vidoe path incorrect")
+    test(n, m, video_path)
