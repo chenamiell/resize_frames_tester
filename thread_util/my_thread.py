@@ -22,18 +22,17 @@ class MyThread(threading.Thread):
         v2f = VideoToFrames(video_path=self.video_path)
         v2f.convert_frames()
         dir_files = [f for f in listdir(v2f.new_dir_path) if isfile(join(v2f.new_dir_path, f))]
+
         for file in dir_files:
-            with open(file, 'rb') as f:
-                files = {
-                         'data': f,
-                         'Content-Disposition': 'form-data; name="image"; filename="' + file + '"',
-                }
-                self.responses.append(requests.post(url=settings.URL, files=files))
+            files = {'file': open(file, 'rb')}
+            payload = {'Content - Disposition': 'form - data', 'name': "image", 'filename': file}
+            self.responses.append(requests.post(url=settings.URL, files=files,
+                                                headers={'Content-Type': 'multipart/form-data'}, data=payload))
         self.end_time = time.time()
 
         print(
             {
-                'insatnces_response': [r._content for r in self.responses],
+                'insatnces_response': [r.json() for r in self.responses],
                 'whole_video_frames_resized': self.end_time - self.start_time
             }
         )
